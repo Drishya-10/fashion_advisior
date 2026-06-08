@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Stylist — Your Personal Fashion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:         #f7f4ef;
+      --ink:        #0e0d0b;
+      --ink-muted:  #6b6760;
+      --ink-dim:    #b0ada8;
+      --gold:       #8a6c3a;
+      --gold-light: #c9a96e;
+      --gold-pale:  #f0e8d8;
+      --surface:    #ffffff;
+      --border:     #e2ddd6;
+      --radius:     4px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 48px;
+      height: 68px;
+      background: rgba(247,244,239,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--ink);
+    }
+
+    .logo em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-muted);
+      padding: 7px 16px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-links a:hover { color: var(--ink); background: var(--gold-pale); }
+    .nav-links a.active { color: var(--gold); font-weight: 500; }
+
+    .nav-cta {
+      background: var(--ink) !important;
+      color: var(--bg) !important;
+      padding: 8px 20px !important;
+    }
+
+    .nav-cta:hover { background: var(--gold) !important; color: #fff !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,169,110,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(138,108,58,0.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+      background: rgba(201,169,110,0.07);
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--gold-light);
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(56px, 8vw, 96px);
+      font-weight: 300;
+      line-height: 1.0;
+      letter-spacing: -1px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      max-width: 900px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--ink-muted);
+      line-height: 1.75;
+      max-width: 520px;
+      margin: 24px auto 44px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .btn-primary:hover {
+      background: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(138,108,58,0.25);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--gold-light);
+      color: var(--gold);
+      background: var(--gold-pale);
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+
+    .stat {
+      padding: 20px 36px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--ink);
+      display: block;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Hero image grid */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr;
+      gap: 10px;
+      margin-top: 72px;
+      width: 100%;
+      max-width: 1100px;
+      height: 320px;
+    }
+
+    .hero-img {
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      filter: saturate(0.9);
+    }
+
+    .hero-img:hover img { transform: scale(1.04); }
+
+    .hero-img-tall { margin-top: -24px; height: 344px; }
+
+    .hero-img-label {
+      position: absolute;
+      bottom: 10px; left: 10px;
+      background: rgba(247,244,239,0.92);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── MARQUEE ── */
+    .marquee {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 13px 0;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 32px;
+      animation: marquee 25s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-track span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      white-space: nowrap;
+    }
+
+    .marquee-track .dot {
+      color: var(--gold-light);
+      letter-spacing: 0;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── STEPS ── */
+    .section {
+      padding: 100px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 300;
+      text-align: center;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    .section-sub {
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 15px;
+      margin-bottom: 60px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .step {
+      background: var(--surface);
+      padding: 44px 36px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .step:hover { background: var(--gold-pale); }
+
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 64px;
+      font-weight: 300;
+      color: var(--gold-pale);
+      line-height: 1;
+      position: absolute;
+      top: 24px; right: 24px;
+      /* visible in background */
+      -webkit-text-stroke: 1px var(--border);
+      color: transparent;
+    }
+
+    .step-icon {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .step h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--ink);
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.75;
+    }
+
+    .step-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+      padding-bottom: 1px;
+    }
+
+    .step-link:hover { border-color: var(--gold-light); }
+    .step-link::after { content: '→'; }
+
+    /* ── LOOKBOOK ── */
+    .lookbook-section {
+      padding: 100px 48px;
+      border-top: 1px solid var(--border);
+      background: var(--ink);
+    }
+
+    .lookbook-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .lookbook-section .section-label { color: var(--gold-light); }
+    .lookbook-section .section-title { color: var(--bg); }
+    .lookbook-section .section-title em { color: var(--gold-light); }
+    .lookbook-section .section-sub { color: rgba(247,244,239,0.5); }
+
+    .lookbook-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: 200px 200px;
+      gap: 8px;
+    }
+
+    .look {
+      position: relative;
+      overflow: hidden;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .look img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      filter: saturate(0.85);
+    }
+
+    .look:hover img { transform: scale(1.07); filter: saturate(1); }
+
+    /* Specific placements */
+    .look:nth-child(1) { grid-column: 1; grid-row: 1 / span 2; }
+    .look:nth-child(2) { grid-column: 2; grid-row: 1; }
+    .look:nth-child(3) { grid-column: 3; grid-row: 1; }
+    .look:nth-child(4) { grid-column: 4; grid-row: 1; }
+    .look:nth-child(5) { grid-column: 5; grid-row: 1 / span 2; }
+    .look:nth-child(6) { grid-column: 2 / span 3; grid-row: 2; }
+
+    .look-tag {
+      position: absolute;
+      bottom: 10px; left: 10px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .look-badge {
+      background: rgba(10,10,10,0.75);
+      border: 1px solid rgba(201,169,110,0.4);
+      color: var(--gold-light);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 100px;
+      backdrop-filter: blur(6px);
+    }
+
+    .look-name {
+      color: rgba(247,244,239,0.9);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      position: relative;
+      height: 480px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .cta-section img {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .cta-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(14,13,11,0.4),
+        rgba(14,13,11,0.75));
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      padding: 0 24px;
+    }
+
+    .cta-content h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 300;
+      color: var(--bg);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .cta-content h2 em { font-style: italic; color: var(--gold-light); }
+
+    .cta-content p {
+      color: rgba(247,244,239,0.65);
+      font-size: 16px;
+      margin-bottom: 36px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-inner {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .logo { color: var(--bg); font-size: 18px; }
+
+    .footer-note {
+      font-size: 12px;
+      color: rgba(247,244,239,0.3);
+      font-family: 'DM Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <div class="logo">✦ AI <em>Stylist</em></div>
+      <nav class="nav-links">
+        <a href="index.html" class="active">Home</a>
+        <a href="stylist.html">Stylist</a>
+        <a href="chat.html">Chat</a>
+        <a href="stylist.html" class="btn nav-cta">Try now →</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">Powered by CLIP · YOLO · Llama 3</div>
+
+    <h1>Dress Smarter.<br/><em>Style Effortlessly.</em></h1>
+
+    <p class="hero-sub">
+      Upload any clothing item and get a complete AI-powered outfit —
+      matched from 44,000 fashion products using computer vision.
+    </p>
+
+    <div class="hero-actions">
+      <a href="stylist.html" class="btn btn-primary">Get your outfit →</a>
+      <a href="chatbot.html" class="btn btn-outline">Chat with Zara ✦</a>
+      <a href="#how-it-works" class="btn btn-outline">How it works</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-num">44k+</span>
+        <span class="stat-label">Fashion Items</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">0.92</span>
+        <span class="stat-label">Avg Match Score</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">CLIP</span>
+        <span class="stat-label">Vision Model</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">RL</span>
+        <span class="stat-label">Learns from you</span>
+      </div>
+    </div>
+
+    <!-- Image grid -->
+    <div class="hero-grid">
+      <div class="hero-img hero-img-tall">
+        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500&q=80" alt="Fashion"/>
+        <div class="hero-img-label">Topwear detected</div>
+      </div>
+      <div class="hero-img">
+        <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=300&q=80" alt="Style"/>
+        <div class="hero-img-label">92% match</div>
+      </div>
+      <div class="hero-img">
+        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&q=80" alt="Outfit"/>
+        <div class="hero-img-label">Outfit built</div>
+      </div>
+      <div class="hero-img hero-img-tall">
+        <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=500&q=80" alt="Complete look"/>
+        <div class="hero-img-label">Complete look</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>Topwear</span><span class="dot">✦</span>
+      <span>Bottomwear</span><span class="dot">✦</span>
+      <span>Footwear</span><span class="dot">✦</span>
+      <span>Accessories</span><span class="dot">✦</span>
+      <span>Bags</span><span class="dot">✦</span>
+      <span>Watches</span><span class="dot">✦</span>
+      <span>Eyewear</span><span class="dot">✦</span>
+      <span>Jewellery</span><span class="dot">✦</span>
+      <span>Ethnic Wear</span><span class="dot">✦</span>
+      <span>Formal</span><span class="dot">✦</span>
+      <span>Casual</span><span class="dot">✦</span>
+      <span>Sports</span><span class="dot">✦</span>
+      <span>Topwear</span><span class="dot">✦</span>
+      <span>Bottomwear</span><span class="dot">✦</span>
+      <span>Footwear</span><span class="dot">✦</span>
+      <span>Accessories</span><span class="dot">✦</span>
+      <span>Bags</span><span class="dot">✦</span>
+      <span>Watches</span><span class="dot">✦</span>
+      <span>Eyewear</span><span class="dot">✦</span>
+      <span>Jewellery</span><span class="dot">✦</span>
+      <span>Ethnic Wear</span><span class="dot">✦</span>
+      <span>Formal</span><span class="dot">✦</span>
+      <span>Casual</span><span class="dot">✦</span>
+      <span>Sports</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div id="how-it-works" style="border-top: 1px solid var(--border);">
+    <div class="section">
+      <p class="section-label">Process</p>
+      <h2 class="section-title">How <em>AI Stylist</em> works</h2>
+      <p class="section-sub">From photo to full outfit in seconds — three intelligent steps</p>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-icon">📸</div>
+          <h3>Upload a photo</h3>
+          <p>Take a photo of any clothing item from your wardrobe. Our system accepts any angle, background, or lighting condition.</p>
+          <a href="stylist.html" class="step-link">Try the stylist</a>
+        </div>
+
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-icon">🔍</div>
+          <h3>AI identifies it</h3>
+          <p>YOLO detects and crops the item. CLIP generates a 512-dimension visual fingerprint and finds the closest match in 44,000 products.</p>
+          <a href="stylist.html" class="step-link">See it in action</a>
+        </div>
+
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-icon">✨</div>
+          <h3>Chat to refine</h3>
+          <p>Zara, your AI stylist, builds a complete outfit and explains each choice. Like or dislike items — she learns your taste over time.</p>
+          <a href="chatbot.html" class="step-link">Chat with Zara</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Lookbook -->
+  <section class="lookbook-section">
+    <div class="lookbook-inner">
+      <p class="section-label">Lookbook</p>
+      <h2 class="section-title" style="color:var(--bg)">
+        <em>AI-curated</em> outfits
+      </h2>
+      <p class="section-sub" style="color:rgba(247,244,239,0.45);margin-bottom:40px">
+        Every outfit built by the same engine powering your stylist
+      </p>
+
+      <div class="lookbook-grid">
+        <div class="look">
+          <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&q=80" alt="Casual"/>
+          <div class="look-tag">
+            <span class="look-badge">Casual</span>
+            <span class="look-name">Summer Minimal</span>
+          </div>
+        </div>
+        <div class="look">
+          <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&q=80" alt="Formal"/>
+          <div class="look-tag">
+            <span class="look-badge">Formal</span>
+            <span class="look-name">Office Ready</span>
+          </div>
+        </div>
+        <div class="look">
+          <img src="https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=400&q=80" alt="Evening"/>
+          <div class="look-tag">
+            <span class="look-badge">Evening</span>
+            <span class="look-name">Date Night</span>
+          </div>
+        </div>
+        <div class="look">
+          <img src="https://images.unsplash.com/photo-1475180098004-ca77a66827be?w=400&q=80" alt="Sport"/>
+          <div class="look-tag">
+            <span class="look-badge">Sport</span>
+            <span class="look-name">Active Wear</span>
+          </div>
+        </div>
+        <div class="look">
+          <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&q=80" alt="Street"/>
+          <div class="look-tag">
+            <span class="look-badge">Street</span>
+            <span class="look-name">Urban Edge</span>
+          </div>
+        </div>
+        <div class="look">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Ethnic"/>
+          <div class="look-tag">
+            <span class="look-badge">Ethnic</span>
+            <span class="look-name">Festive Collection</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1400&q=80" alt="CTA"/>
+    <div class="cta-overlay"></div>
+    <div class="cta-content">
+      <h2>Your wardrobe,<br/><em>reimagined.</em></h2>
+      <p>Upload your first item and get styled in seconds. No sign-up required.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="stylist.html" class="btn btn-primary" style="background:var(--gold-light);color:#0e0d0b">
+          Start styling →
+        </a>
+        <a href="chat.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.3);color:var(--bg)">
+          Chat with Zara
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="logo">✦ AI <em>Stylist</em></div>
+      <div class="footer-note">CLIP · YOLO · Llama 3 · FastAPI · Kaggle Fashion Dataset</div>
+    </div>
+  </footer>
+</body>
+</html>

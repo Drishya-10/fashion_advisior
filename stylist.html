@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Stylist</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            margin-top: 30px;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        input {
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+
+        #preview {
+            margin-top: 20px;
+            max-width: 300px;
+            border-radius: 10px;
+        }
+
+        #results {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>👗 AI Stylist</h1>
+
+<div class="container">
+    <input type="file" id="fileInput" accept="image/*">
+    <br>
+    <button onclick="uploadImage()">Get Recommendations</button>
+
+    <br>
+    <img id="preview" src="" alt="">
+</div>
+
+<h2>Recommended Outfits</h2>
+<div id="results"></div>
+
+<script>
+const API_URL = "https://flashbulb-thermal-crisply.ngrok-free.dev";
+
+function previewImage() {
+    const file = document.getElementById("fileInput").files[0];
+    const preview = document.getElementById("preview");
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+    }
+}
+
+document.getElementById("fileInput").addEventListener("change", previewImage);
+
+async function uploadImage() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please upload an image");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "<p>Loading...</p>";
+
+    try {
+        // Convert image to base64 first
+         const toBase64 = file => new Promise((resolve, reject) => {
+           const reader = new FileReader();
+           reader.readAsDataURL(file);
+           reader.onload  = () => resolve(reader.result.split(',')[1]);
+           reader.onerror = reject;
+         });
+
+        const base64 = await toBase64(currentFile);
+
+        const res = await fetch(`${API}/recommend`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           image:  base64,
+           gender: selectedGender,
+           usage:  selectedUsage,
+           }),
+         });
+
+        const data = await res.json();
+
+        resultsDiv.innerHTML = "";
+
+        data.results.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            // If your IDs are image filenames → show image
+            if (item.endsWith(".jpg") || item.endsWith(".png")) {
+                const img = document.createElement("img");
+                img.src = "images/" + item;  // 🔥 keep images in /images folder
+                img.style.width = "100%";
+                img.style.borderRadius = "8px";
+
+                card.appendChild(img);
+            }
+
+            const text = document.createElement("p");
+            text.innerText = item;
+
+            card.appendChild(text);
+            resultsDiv.appendChild(card);
+        });
+
+    } catch (err) {
+        resultsDiv.innerHTML = "<p>Error connecting to backend</p>";
+        console.error(err);
+    }
+}
+</script>
+
+</body>
+</html>

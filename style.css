@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:         #f7f4ef;
+  --ink:        #0e0d0b;
+  --ink-muted:  #6b6760;
+  --ink-dim:    #b0ada8;
+  --gold:       #8a6c3a;
+  --gold-light: #c9a96e;
+  --gold-pale:  #f0e8d8;
+  --surface:    #ffffff;
+  --border:     #e2ddd6;
+  --radius:     4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 48px;
+  height: 68px;
+  background: rgba(247,244,239,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+}
+
+.logo em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-links a {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-muted);
+  padding: 7px 16px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.nav-links a:hover { color: var(--ink); background: var(--gold-pale); }
+.nav-links a.active { color: var(--gold); font-weight: 500; }
+
+.nav-cta {
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+  padding: 8px 20px !important;
+}
+.nav-cta:hover { background: var(--gold) !important; color: #fff !important; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--bg);
+}
+.btn-primary:hover {
+  background: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(138,108,58,0.25);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover {
+  border-color: var(--gold-light);
+  color: var(--gold);
+  background: var(--gold-pale);
+}
+
+/* Section shared */
+.section {
+  padding: 100px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+
+.section-title em { font-style: italic; color: var(--gold); }
+
+.section-sub {
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 15px;
+  margin-bottom: 60px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Score bar */
+.score-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.score-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}

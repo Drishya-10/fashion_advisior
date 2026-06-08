@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fashion Chatbot</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 550px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: black;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 70%;
+        }
+
+        .user {
+            background: #d1e7ff;
+            align-self: flex-end;
+        }
+
+        .bot {
+            background: #eaeaea;
+            align-self: flex-start;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+    <div class="header">💬 Fashion Assistant</div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-area">
+        <input type="text" id="msg" placeholder="Ask for outfit ideas...">
+        <button onclick="sendMsg()">Send</button>
+    </div>
+</div>
+
+<script>
+const API_URL = "https://flashbulb-thermal-crisply.ngrok-free.dev";
+
+function addMessage(text, sender) {
+    const chatBox = document.getElementById("chatBox");
+
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", sender);
+    msgDiv.innerText = text;
+
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function sendMsg() {
+    const input = document.getElementById("msg");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    // show user message
+    addMessage("You: " + message, "user");
+
+    input.value = "";
+
+    try {
+        const res = await fetch(`${API_URL}/chat?query=${encodeURIComponent(message)}`, {
+            method: "POST"
+        });
+
+        const data = await res.json();
+
+        // show bot response
+        addMessage("Bot: " + data.response, "bot");
+
+    } catch (error) {
+        addMessage("Error connecting to backend", "bot");
+        console.error(error);
+    }
+}
+
+// Enter key support
+document.getElementById("msg").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMsg();
+    }
+});
+</script>
+
+</body>
+</html>
