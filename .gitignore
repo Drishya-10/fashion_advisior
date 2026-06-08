@@ -1,6 +1,7 @@
+embedding_vectors.npy
+embedding_ids.npy
 __pycache__/
 *.pyc
 venv/
 .env
-*.zip
 archive/
