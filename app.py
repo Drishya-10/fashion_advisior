@@ -478,7 +478,7 @@ def feedback():
 from groq import Groq
 import json
 
-groq_client          = Groq(api_key=os.getenv("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"))
+groq_client          = Groq(api_key=os.getenv("GROQ_API_KEY"))
 conversation_history = []
 
 LIKE_WEIGHT    =  0.3
