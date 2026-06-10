@@ -9,7 +9,6 @@ import open_clip
 from sklearn.metrics.pairwise import cosine_similarity
 from ultralytics import YOLO
 from collections import defaultdict
-import kagglehub
 import requests
 from io import BytesIO
 import os
@@ -22,20 +21,32 @@ CORS(app)
 # ────────────────────────────────────────────
 
 # ── Dataset ──
-print("Loading dataset from Kaggle...")
-path = kagglehub.dataset_download("paramaggarwal/fashion-product-images-dataset")
-STYLES_CSV = None
-for root, dirs, files in os.walk(path):
-    for f in files:
-        if f in ("styles.csv", "style.csv"):
-            STYLES_CSV = os.path.join(root, f)
-            break
+print("Loading local dataset...")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+STYLES_CSV = os.path.join(
+    BASE_DIR,
+    "data",
+    "styles.csv"
+)
+
+if not os.path.exists(STYLES_CSV):
+    raise FileNotFoundError(
+        f"styles.csv not found: {STYLES_CSV}"
+    )
 
 df = pd.read_csv(STYLES_CSV, on_bad_lines="skip")
-df["id"] = pd.to_numeric(df["id"], errors="coerce").dropna().astype(int)
+
+df["id"] = pd.to_numeric(
+    df["id"],
+    errors="coerce"
+)
+
 df = df.dropna(subset=["id"])
 df["id"] = df["id"].astype(int)
-print(f"✅ Dataset: {len(df)} products")
+
+print(f"✅ Dataset loaded: {len(df)} products")
 
 # ── Embeddings ──
 print("Loading embeddings...")
