@@ -3,6 +3,7 @@ Fashion AI Advisor
 Fashion AI Advisor is an AI-powered fashion recommendation system that helps users discover similar clothing items, generate outfit suggestions, and receive fashion advice through a chatbot.
 
 Features:
+
 Upload a clothing image and find visually similar products.
 Detect fashion items using YOLOv8.
 Generate image embeddings with OpenCLIP.
